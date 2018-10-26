@@ -14,15 +14,9 @@ ENV GROUP_ID ${GROUP_ID:-1000}
 RUN groupadd -g ${GROUP_ID} bitcoin \
 	&& useradd -u ${USER_ID} -g bitcoin -s /bin/bash -m -d /bitcoin bitcoin
 
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C70EF1F0305A1ADB9986DBD8D46F45428842CE5E && \
-    echo "deb http://ppa.launchpad.net/bitcoin/bitcoin/ubuntu xenial main" > /etc/apt/sources.list.d/bitcoin.list
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-		bitcoind \
-	&& apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
 # grab gosu for easy step-down from root
 ENV GOSU_VERSION 1.7
+ENV BTCGPU_VERSION 0.15.2
 RUN set -x \
 	&& apt-get update && apt-get install -y --no-install-recommends \
 		ca-certificates \
@@ -35,11 +29,15 @@ RUN set -x \
 	&& rm -r "$GNUPGHOME" /usr/local/bin/gosu.asc \
 	&& chmod +x /usr/local/bin/gosu \
 	&& gosu nobody true \
+	&& wget -O /tmp/bitcoin-gold-$BTCGPU_VERSION-x86_64-linux-gnu.tar.gz https://github.com/BTCGPU/BTCGPU/releases/download/v$BTCGPU_VERSION/bitcoin-gold-$BTCGPU_VERSION-x86_64-linux-gnu.tar.gz \
+	&& wget -O /tmp/bitcoin-gold-$BTCGPU_VERSION.asc https://github.com/BTCGPU/BTCGPU/releases/download/v0.15.2/SHA256SUMS.asc \
+	&& gpg --keyserver ha.pool.sks-keyservers.net --recv-keys 0x38EE12EB597B4FC0 \
+	&& gpg --batch --verify /tmp/bitcoin-gold-$BTCGPU_VERSION.asc /tmp/bitcoin-gold-$BTCGPU_VERSION-x86_64-linux-gnu.tar.gz \
+	&& tar xzf --strip-components=1 -C /usr/local/ /tmp/bitcoin-gold-$BTCGPU_VERSION-x86_64-linux-gnu.tar.gz \
 	&& apt-get purge -y \
 		ca-certificates \
 		wget \
 	&& apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
 ADD ./bin /usr/local/bin
 
 VOLUME ["/bitcoin"]
