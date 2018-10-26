@@ -26,7 +26,6 @@ RUN set -x \
 	&& export GNUPGHOME="$(mktemp -d)" \
 	&& gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
 	&& gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
-	&& rm -r "$GNUPGHOME" /usr/local/bin/gosu.asc \
 	&& chmod +x /usr/local/bin/gosu \
 	&& gosu nobody true \
 	&& wget -O /tmp/bitcoin-gold-$BTCGPU_VERSION-x86_64-linux-gnu.tar.gz https://github.com/BTCGPU/BTCGPU/releases/download/v$BTCGPU_VERSION/bitcoin-gold-$BTCGPU_VERSION-x86_64-linux-gnu.tar.gz \
@@ -34,6 +33,7 @@ RUN set -x \
 	&& gpg --keyserver ha.pool.sks-keyservers.net --recv-keys 0x38EE12EB597B4FC0 \
 	&& gpg --batch --verify /tmp/bitcoin-gold-$BTCGPU_VERSION.asc /tmp/bitcoin-gold-$BTCGPU_VERSION-x86_64-linux-gnu.tar.gz \
 	&& tar xzf --strip-components=1 -C /usr/local/ /tmp/bitcoin-gold-$BTCGPU_VERSION-x86_64-linux-gnu.tar.gz \
+	&& rm -r "$GNUPGHOME" /usr/local/bin/gosu.asc \
 	&& apt-get purge -y \
 		ca-certificates \
 		wget \
