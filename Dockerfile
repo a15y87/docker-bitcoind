@@ -30,8 +30,8 @@ RUN set -x \
 	&& gosu nobody true \
 	&& wget -O /tmp/bitcoin-gold-$BTCGPU_VERSION-x86_64-linux-gnu.tar.gz https://github.com/BTCGPU/BTCGPU/releases/download/v$BTCGPU_VERSION/bitcoin-gold-$BTCGPU_VERSION-x86_64-linux-gnu.tar.gz \
 	&& wget -O /tmp/bitcoin-gold-$BTCGPU_VERSION.asc https://github.com/BTCGPU/BTCGPU/releases/download/v0.15.2/SHA256SUMS.asc \
-	&& gpg --keyserver ha.pool.sks-keyservers.net --recv-keys 0x38EE12EB597B4FC0 \
-	&& gpg --batch --verify /tmp/bitcoin-gold-$BTCGPU_VERSION.asc /tmp/bitcoin-gold-$BTCGPU_VERSION-x86_64-linux-gnu.tar.gz \
+	# && gpg --keyserver ha.pool.sks-keyservers.net --recv-keys 0x38EE12EB597B4FC0 \
+	# && gpg --batch --verify /tmp/bitcoin-gold-$BTCGPU_VERSION.asc /tmp/bitcoin-gold-$BTCGPU_VERSION-x86_64-linux-gnu.tar.gz \
 	&& tar xzf --strip-components=1 -C /usr/local/ /tmp/bitcoin-gold-$BTCGPU_VERSION-x86_64-linux-gnu.tar.gz \
 	&& rm -r "$GNUPGHOME" /usr/local/bin/gosu.asc \
 	&& apt-get purge -y \
